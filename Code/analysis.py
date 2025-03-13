@@ -69,6 +69,13 @@ log_reg = LogisticRegression(max_iter=1000)
 log_reg.fit(X_train, y_train)
 y_pred = log_reg.predict(X_test)
 
+# Đánh giá mô hình
+print("Accuracy(Logistic Regression):", accuracy_score(y_test, y_pred))
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+
 # Tính Specificity cho mô hình Logistic Regression
 cm_log_reg = confusion_matrix(y_test, y_pred)
 tn_log_reg, fp_log_reg, fn_log_reg, tp_log_reg = cm_log_reg.ravel()
