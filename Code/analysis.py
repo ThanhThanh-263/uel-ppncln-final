@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, roc_auc_score
+from sklearn.svm import SVC
 
 # Định nghĩa tên cột theo bộ dữ liệu gốc
 column_names = [
@@ -68,10 +69,27 @@ log_reg = LogisticRegression(max_iter=1000)
 log_reg.fit(X_train, y_train)
 y_pred = log_reg.predict(X_test)
 
-# Đánh giá mô hình
-print("Accuracy (Logistic Regression):", accuracy_score(y_test, y_pred))
-print("Classification Report (Logistic Regression):\n", classification_report(y_test, y_pred))
-print("Confusion Matrix (Logistic Regression):\n", confusion_matrix(y_test, y_pred))
+# Tính Specificity cho mô hình Logistic Regression
+cm_log_reg = confusion_matrix(y_test, y_pred)
+tn_log_reg, fp_log_reg, fn_log_reg, tp_log_reg = cm_log_reg.ravel()
+specificity_log_reg = tn_log_reg / (tn_log_reg + fp_log_reg)
+print(f"Specificity (Logistic Regression): {specificity_log_reg:.2f}")
+
+# Tính ROC-AUC cho mô hình Logistic Regression
+y_pred_proba_log_reg = log_reg.predict_proba(X_test)[:, 1]
+roc_auc_log_reg = roc_auc_score(y_test, y_pred_proba_log_reg)
+print(f"ROC-AUC (Logistic Regression): {roc_auc_log_reg:.2f}")
+
+# Vẽ biểu đồ ROC Curve cho Logistic Regression
+fpr_log_reg, tpr_log_reg, thresholds_log_reg = roc_curve(y_test, y_pred_proba_log_reg)
+plt.figure(figsize=(8, 6))
+plt.plot(fpr_log_reg, tpr_log_reg, label=f"ROC Curve (AUC = {roc_auc_log_reg:.2f})", color="green")
+plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve (Logistic Regression)")
+plt.legend()
+plt.show()
 
 # Huấn luyện mô hình Random Forest
 rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -100,6 +118,38 @@ plt.plot(fpr, tpr, label=f"ROC Curve (AUC = {roc_auc:.2f})", color="blue")
 plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
 plt.xlabel("False Positive Rate")
 plt.ylabel("True Positive Rate")
-plt.title("ROC Curve")
+plt.title("ROC Curve Random Forest")
+plt.legend()
+plt.show()
+
+# Huấn luyện mô hình SVM
+svm_model = SVC(probability=True, random_state=42)
+svm_model.fit(X_train, y_train)
+y_pred_svm = svm_model.predict(X_test)
+
+# Đánh giá mô hình SVM
+print("Accuracy (SVM):", accuracy_score(y_test, y_pred_svm))
+print("Classification Report (SVM):\n", classification_report(y_test, y_pred_svm))
+print("Confusion Matrix (SVM):\n", confusion_matrix(y_test, y_pred_svm))
+
+# Tính Specificity cho mô hình SVM
+cm_svm = confusion_matrix(y_test, y_pred_svm)
+tn_svm, fp_svm, fn_svm, tp_svm = cm_svm.ravel()
+specificity_svm = tn_svm / (tn_svm + fp_svm)
+print(f"Specificity (SVM): {specificity_svm:.2f}")
+
+# Tính ROC-AUC cho mô hình SVM
+y_pred_proba_svm = svm_model.predict_proba(X_test)[:, 1]
+roc_auc_svm = roc_auc_score(y_test, y_pred_proba_svm)
+print(f"ROC-AUC (SVM): {roc_auc_svm:.2f}")
+
+# Vẽ biểu đồ ROC Curve cho SVM
+fpr_svm, tpr_svm, thresholds_svm = roc_curve(y_test, y_pred_proba_svm)
+plt.figure(figsize=(8, 6))
+plt.plot(fpr_svm, tpr_svm, label=f"ROC Curve (AUC = {roc_auc_svm:.2f})", color="red")
+plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve (SVM)")
 plt.legend()
 plt.show()
