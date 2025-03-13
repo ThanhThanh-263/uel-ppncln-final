@@ -15,7 +15,7 @@ column_names = [
 ]
 
 # Đọc dữ liệu từ file
-file_path = "../datadet/processed.cleveland.data"
+file_path = "../dataset/processed.cleveland.data"
 df = pd.read_csv(file_path, header=None, names=column_names)
 
 # Thay thế '?' bằng NaN

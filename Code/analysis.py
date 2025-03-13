@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, roc_curve, roc_auc_score
 
 # Định nghĩa tên cột theo bộ dữ liệu gốc
 column_names = [
@@ -15,7 +15,7 @@ column_names = [
 ]
 
 # Đọc dữ liệu từ file
-file_path = "../datadet/processed.cleveland.data"
+file_path = "../dataset/processed.cleveland.data"
 df = pd.read_csv(file_path, header=None, names=column_names)
 
 # Thay thế '?' bằng NaN
@@ -83,3 +83,23 @@ print("Accuracy (Random Forest):", accuracy_score(y_test, y_pred_rf))
 print("Classification Report (Random Forest):\n", classification_report(y_test, y_pred_rf))
 print("Confusion Matrix (Random Forest):\n", confusion_matrix(y_test, y_pred_rf))
 
+cm = confusion_matrix(y_test, y_pred_rf)
+tn, fp, fn, tp = cm.ravel()
+specificity = tn / (tn + fp)
+print(f"Specificity: {specificity:.2f}")
+
+# Tính ROC-AUC: cần xác suất dự đoán của lớp 1
+y_pred_proba = rf_model.predict_proba(X_test)[:, 1]
+roc_auc = roc_auc_score(y_test, y_pred_proba)
+print(f"ROC-AUC: {roc_auc:.2f}")
+
+# Vẽ biểu đồ ROC Curve
+fpr, tpr, thresholds = roc_curve(y_test, y_pred_proba)
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, label=f"ROC Curve (AUC = {roc_auc:.2f})", color="blue")
+plt.plot([0, 1], [0, 1], linestyle="--", color="gray")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve")
+plt.legend()
+plt.show()
