@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from pyexpat import model
+
+import shap
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -95,3 +98,5 @@ plt.ylabel("True Positive Rate")
 plt.title("ROC Curve")
 plt.legend()
 plt.show()
+
+
